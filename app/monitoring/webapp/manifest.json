@@ -1,0 +1,37 @@
+{
+  "_version": "1.86.0",
+  "sap.app": {
+    "id": "monitoring",
+    "type": "application",
+    "applicationVersion": { "version": "0.0.1" },
+    "title": "MOBI Integration Monitoring",
+    "description": "Operational monitoring for SFTP, database processing, consolidation and CPI posting.",
+    "dataSources": {
+      "mainService": {
+        "uri": "/monitoring/srv-api/odata/v4/mobi-monitoring/",
+        "type": "OData",
+        "settings": { "odataVersion": "4.0" }
+      }
+    }
+  },
+  "sap.cloud": {
+    "public": true,
+    "service": "mobi.monitoring"
+  },
+  "sap.ui": {
+    "technology": "UI5",
+    "deviceTypes": { "desktop": true, "tablet": true, "phone": true }
+  },
+  "sap.ui5": {
+    "dependencies": {
+      "minUI5Version": "1.149.1",
+      "libs": { "sap.m": {}, "sap.ui.core": {}, "sap.ui.layout": {} }
+    },
+    "rootView": {
+      "viewName": "monitoring.view.Main",
+      "type": "XML",
+      "id": "Main",
+      "async": true
+    }
+  }
+}
