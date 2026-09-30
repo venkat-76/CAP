@@ -1,0 +1,12 @@
+{
+  "name": "monitoring",
+  "version": "0.0.1",
+  "private": true,
+  "scripts": {
+    "start": "ui5 serve -o index.html",
+    "build:cf": "ui5 build --clean-dest"
+  },
+  "devDependencies": {
+    "@ui5/cli": "^4.0.0"
+  }
+}

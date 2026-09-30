@@ -1,0 +1,111 @@
+<mvc:View controllerName="monitoring.controller.Main"
+  xmlns:mvc="sap.ui.core.mvc" xmlns="sap.m">
+  <Page title="MOBI Integration Monitoring">
+    <customHeader>
+      <Toolbar>
+        <Title text="MOBI Integration Monitoring" level="H2"/>
+        <ToolbarSpacer/>
+        <Button icon="sap-icon://refresh" text="Refresh" press=".onRefresh"/>
+      </Toolbar>
+    </customHeader>
+    <content>
+      <VBox class="sapUiSmallMargin">
+        <MessageStrip
+          text="Live operational view of SFTP ingestion, database processing, consolidation and CPI posting."
+          type="Information" showIcon="true" class="sapUiSmallMarginBottom"/>
+
+        <Title text="Process Overview" level="H3"/>
+        <HBox wrap="Wrap" class="sapUiSmallMarginBottom">
+          <GenericTile header="Files" subheader="SFTP → BTP" class="sapUiTinyMarginEnd sapUiTinyMarginBottom">
+            <TileContent><NumericContent value="{/summary/filesTotal}" valueColor="Neutral"/></TileContent>
+          </GenericTile>
+          <GenericTile header="Completed Files" subheader="SFTP processing" class="sapUiTinyMarginEnd sapUiTinyMarginBottom">
+            <TileContent><NumericContent value="{/summary/filesCompleted}" valueColor="Good"/></TileContent>
+          </GenericTile>
+          <GenericTile header="Failed Files" subheader="SFTP processing" class="sapUiTinyMarginEnd sapUiTinyMarginBottom">
+            <TileContent><NumericContent value="{/summary/filesFailed}" valueColor="Error"/></TileContent>
+          </GenericTile>
+          <GenericTile header="Transactions" subheader="Stored in DB" class="sapUiTinyMarginEnd sapUiTinyMarginBottom">
+            <TileContent><NumericContent value="{/summary/transactionsTotal}" valueColor="Neutral"/></TileContent>
+          </GenericTile>
+          <GenericTile header="Consolidations" subheader="DB processing" class="sapUiTinyMarginEnd sapUiTinyMarginBottom">
+            <TileContent><NumericContent value="{/summary/consolidationTotal}" valueColor="Neutral"/></TileContent>
+          </GenericTile>
+          <GenericTile header="Pending Posting" subheader="DB → CPI/SAP" class="sapUiTinyMarginEnd sapUiTinyMarginBottom">
+            <TileContent><NumericContent value="{/summary/consolidationPending}" valueColor="Critical"/></TileContent>
+          </GenericTile>
+          <GenericTile header="Posted" subheader="DB → CPI/SAP" class="sapUiTinyMarginEnd sapUiTinyMarginBottom">
+            <TileContent><NumericContent value="{/summary/consolidationPosted}" valueColor="Good"/></TileContent>
+          </GenericTile>
+          <GenericTile header="Posting Failed" subheader="DB → CPI/SAP" class="sapUiTinyMarginEnd sapUiTinyMarginBottom">
+            <TileContent><NumericContent value="{/summary/consolidationFailed}" valueColor="Error"/></TileContent>
+          </GenericTile>
+        </HBox>
+
+        <Title text="Latest File Processing" level="H3" class="sapUiSmallMarginTop"/>
+        <Table id="fileTable" items="{/files}" growing="true" growingThreshold="20"
+               noDataText="No file processing records found.">
+          <columns>
+            <Column><Text text="File"/></Column><Column><Text text="Status"/></Column>
+            <Column><Text text="Total"/></Column><Column><Text text="Valid"/></Column>
+            <Column><Text text="Errors"/></Column><Column><Text text="Started"/></Column>
+            <Column><Text text="Completed"/></Column><Column><Text text="Error Detail"/></Column>
+          </columns>
+          <items><ColumnListItem>
+            <cells>
+              <Text text="{FILE_NAME}"/>
+              <ObjectStatus text="{STATUS}" state="{path:'STATUS',formatter:'.statusState'}"/>
+              <Text text="{ROW_COUNT_TOTAL}"/><Text text="{ROW_COUNT_VALID}"/><Text text="{ROW_COUNT_ERROR}"/>
+              <Text text="{PROCESS_START_AT}"/><Text text="{PROCESS_END_AT}"/><Text text="{ERROR_DETAIL}"/>
+            </cells>
+          </ColumnListItem></items>
+        </Table>
+
+        <Title text="Latest Consolidation / CPI Posting" level="H3" class="sapUiSmallMarginTop"/>
+        <Table id="consolidationTable" items="{/consolidations}" growing="true" growingThreshold="20"
+               noDataText="No consolidation records found.">
+          <columns>
+            <Column><Text text="Consolidation Ref"/></Column><Column><Text text="Company"/></Column>
+            <Column><Text text="Payment Type"/></Column><Column><Text text="Posting Date"/></Column>
+            <Column><Text text="Status"/></Column><Column><Text text="HTTP"/></Column>
+            <Column><Text text="Retry"/></Column><Column><Text text="SAP Reference"/></Column>
+            <Column><Text text="Created"/></Column>
+          </columns>
+          <items><ColumnListItem>
+            <cells>
+              <Text text="{CONSOL_REF_ID}"/><Text text="{COMPANY_CODE}"/><Text text="{PAYMENT_TYPE}"/>
+              <Text text="{POSTING_DATE}"/>
+              <ObjectStatus text="{STATUS_CODE}" state="{path:'STATUS_CODE',formatter:'.statusState'}"/>
+              <ObjectStatus text="{HTTP_STATUS}" state="{path:'HTTP_STATUS',formatter:'.httpState'}"/>
+              <Text text="{RETRY_COUNT}"/><Text text="{SAP_REF_DOCUMENT}"/><Text text="{CREATED_TIMESTAMP}"/>
+            </cells>
+          </ColumnListItem></items>
+        </Table>
+
+        <Title text="Latest Audit / Error Messages" level="H3" class="sapUiSmallMarginTop"/>
+        <Table id="auditTable" items="{/audits}" growing="true" growingThreshold="30"
+               noDataText="No audit records found.">
+          <columns>
+            <Column><Text text="Process"/></Column><Column><Text text="Type"/></Column>
+            <Column><Text text="Message Type"/></Column><Column><Text text="Message"/></Column>
+            <Column><Text text="Created"/></Column>
+          </columns>
+          <items><ColumnListItem>
+            <cells>
+              <Text text="{PROCESS_NAME}"/><Text text="{PROCESS_TYPE}"/>
+              <ObjectStatus text="{MESSAGE_TYPE}" state="{path:'MESSAGE_TYPE',formatter:'.messageState'}"/>
+              <Text text="{STATUS_MESSAGE}" maxLines="2"/><Text text="{CREATED_TIMESTAMP}"/>
+            </cells>
+          </ColumnListItem></items>
+        </Table>
+
+        <Title text="Last Activity" level="H3" class="sapUiSmallMarginTop"/>
+        <HBox wrap="Wrap">
+          <ObjectStatus class="sapUiTinyMarginEnd" title="File activity" text="{/summary/lastFileActivity}"/>
+          <ObjectStatus class="sapUiTinyMarginEnd" title="Consolidation" text="{/summary/lastConsolidation}"/>
+          <ObjectStatus title="Audit" text="{/summary/lastAuditActivity}"/>
+        </HBox>
+      </VBox>
+    </content>
+  </Page>
+</mvc:View>
