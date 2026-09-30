@@ -29,11 +29,6 @@ function num(value) {
   return Number(value || 0);
 }
 
-/**
- * Run-level outcome from per-file results plus aggregated record totals.
- * File statuses: COMPLETED | PARTIAL | FAILED
- * allowPartial=false (Transaction: all-or-nothing) collapses any failure to ERROR.
- */
 function outcomeForRun(files = [], totals = {}, allowPartial = true) {
   const list = files || [];
   if (!list.length) return 'SUCCESS';
@@ -67,7 +62,7 @@ function shell({ banner, environment, titleHtml, greetingHtml, bodyHtml }) {
 <tr>
 <td align="center" style="background:${banner};color:#ffffff;padding:30px;border-radius:8px 8px 0 0;">
 <div style="font-size:32px;font-weight:bold;">SAP Cloud Integration</div>
-<div style="font-size:18px;margin-top:8px;">${escapeHtml(environment)}</div>
+<div style="font-size:18px;margin-top:8px;">DEV</div>
 </td>
 </tr>
 <tr>
@@ -183,7 +178,7 @@ function buildSftpSummaryMail({
       : `The <b>${escapeHtml(interfaceName)}</b> interface execution has completed with <b>errors</b>. ` +
         `No records could be processed successfully. ${escapeHtml(pushNote)} Please find the processing summary below.`;
 
-  let rows = summaryRow('CI Tenant', escapeHtml(environment))
+  let rows = summaryRow('CI Tenant', 'DEV')
     + summaryRow('Interface Name', escapeHtml(interfaceName))
     + summaryRow('Execution Time', escapeHtml(executionTime))
     + summaryRow('Files Processed', String(list.length))
@@ -278,14 +273,14 @@ function buildConsolidationMail({
         `All <b>${total}</b> transaction(s) were consolidated without errors and are pending posting to SAP.`)
     : outcome === 'PARTIAL'
       ? `The <b>${escapeHtml(interfaceName)}</b> interface execution has completed with <b>partial success</b>. ` +
-        `<b>${success}</b> transaction(s) are ready but were <b>held back, not posted</b> (all-or-nothing: ` +
+        `<b>${success}</b> transaction(s) are ready but were <b>held back, not posted</b>  ` +
         `no documents are created while <b>${failed}</b> record(s) are blocked). ` +
         'Please find the processing summary below.'
       : `The <b>${escapeHtml(interfaceName)}</b> interface execution has completed with <b>errors</b>. ` +
-        `No transactions could be consolidated (all-or-nothing: no documents were created). ` +
+        `No transactions could be consolidated (no documents were created). ` +
         'Please find the processing summary below.';
 
-  let rows = summaryRow('CI Tenant', escapeHtml(environment))
+  let rows = summaryRow('CI Tenant','DEV')
     + summaryRow('Interface Name', escapeHtml(interfaceName))
     + summaryRow('Scenario', escapeHtml(scenarioCode || displayName))
     + summaryRow('Execution Time', escapeHtml(executionTime))
@@ -313,7 +308,7 @@ function buildConsolidationMail({
     body += actionBox(
       'Please review the attached consolidation error file and the error file in the SFTP ERROR folder. ' +
       'Fix the missing GL account / business-partner master data and re-run consolidation. ' +
-      'Blocked records were not posted (all-or-nothing) and will be picked up automatically on the next run.'
+      'Blocked records were not posted and will be picked up automatically on the next run.'
     );
   } else {
     body += bottomSpacer();
@@ -347,7 +342,7 @@ function buildRunFailureMail({
   const greeting = `The <b>${escapeHtml(interfaceName)}</b> interface execution has <b>failed unexpectedly</b> ` +
     'before a processing summary could be produced. Please find the failure details below.';
 
-  let rows = summaryRow('CI Tenant', escapeHtml(environment))
+  let rows = summaryRow('CI Tenant', 'DEV')
     + summaryRow('Interface Name', escapeHtml(interfaceName))
     + summaryRow('Execution Time', escapeHtml(executionTime))
     + summaryRow('Error', `<span style="color:red;font-weight:bold;">${escapeHtml(error)}</span>`);
